@@ -34,7 +34,7 @@
 #ifdef SDL_JOYSTICK_HIDAPI_PS5_VR2_SENSE
 
 /* Define this if you want to log all packets from the controller */
-#define DEBUG_PS5_PROTOCOL
+//#define DEBUG_PS5_PROTOCOL
 
 /* Define this if you want to log calibration data */
 /*#define DEBUG_PS5_CALIBRATION*/
@@ -512,9 +512,9 @@ static SDL_bool HIDAPI_DriverPS5_VR2Sense_InitDevice(SDL_HIDAPI_Device *device)
     device->type = SDL_CONTROLLER_TYPE_PS5;
     if (device->vendor_id == USB_VENDOR_SONY) {
         if (SDL_IsJoystickDualSenseEdge(device->vendor_id, device->product_id)) {
-            HIDAPI_SetDeviceName(device, "DualSense Edge Wireless Controller");
+            //HIDAPI_SetDeviceName(device, "DualSense Edge Wireless Controller");
         } else {
-            HIDAPI_SetDeviceName(device, "DualSense Wireless Controller");
+            //HIDAPI_SetDeviceName(device, "DualSense Wireless Controller");
         }
     }
     HIDAPI_SetDeviceSerial(device, serial);
@@ -1151,63 +1151,20 @@ static void HIDAPI_DriverPS5_VR2Sense_HandleStatePacketCommon(SDL_Joystick *joys
 {
     Sint16 axis;
 
-    if (ctx->last_state.state.rgucButtonsAndHat[0] != packet->rgucButtonsAndHat[0]) {
-        {
-            Uint8 data = (packet->rgucButtonsAndHat[0] >> 4);
+    /*
+      data[9] 1 - create
+      data[8] 8 - triangle
+      data[8] 1 - square
+      data[3] 0xff - l2
+      data[4] 0xff - l2 capacitative finger proximity pre-touch
+    */
 
-            SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_X, (data & 0x01) ? SDL_PRESSED : SDL_RELEASED);
-            SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_A, (data & 0x02) ? SDL_PRESSED : SDL_RELEASED);
-            SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_B, (data & 0x04) ? SDL_PRESSED : SDL_RELEASED);
-            SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_Y, (data & 0x08) ? SDL_PRESSED : SDL_RELEASED);
-        }
-        {
-            Uint8 data = (packet->rgucButtonsAndHat[0] & 0x0F);
-            SDL_bool dpad_up = SDL_FALSE;
-            SDL_bool dpad_down = SDL_FALSE;
-            SDL_bool dpad_left = SDL_FALSE;
-            SDL_bool dpad_right = SDL_FALSE;
-
-            switch (data) {
-            case 0:
-                dpad_up = SDL_TRUE;
-                break;
-            case 1:
-                dpad_up = SDL_TRUE;
-                dpad_right = SDL_TRUE;
-                break;
-            case 2:
-                dpad_right = SDL_TRUE;
-                break;
-            case 3:
-                dpad_right = SDL_TRUE;
-                dpad_down = SDL_TRUE;
-                break;
-            case 4:
-                dpad_down = SDL_TRUE;
-                break;
-            case 5:
-                dpad_left = SDL_TRUE;
-                dpad_down = SDL_TRUE;
-                break;
-            case 6:
-                dpad_left = SDL_TRUE;
-                break;
-            case 7:
-                dpad_up = SDL_TRUE;
-                dpad_left = SDL_TRUE;
-                break;
-            default:
-                break;
-            }
-            SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_DPAD_DOWN, dpad_down);
-            SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_DPAD_UP, dpad_up);
-            SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_DPAD_RIGHT, dpad_right);
-            SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_DPAD_LEFT, dpad_left);
-        }
-    }
-
-    if (ctx->last_state.state.rgucButtonsAndHat[1] != packet->rgucButtonsAndHat[1]) {
-        Uint8 data = packet->rgucButtonsAndHat[1];
+    if (1) {
+        Uint8 data = (packet->rgucButtonsAndHat[0] >> 4);
+        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_X, (data & 0x01) ? SDL_PRESSED : SDL_RELEASED);
+        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_A, (data & 0x02) ? SDL_PRESSED : SDL_RELEASED);
+        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_B, (data & 0x04) ? SDL_PRESSED : SDL_RELEASED);
+        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_Y, (data & 0x08) ? SDL_PRESSED : SDL_RELEASED);
 
         SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_LEFTSHOULDER, (data & 0x01) ? SDL_PRESSED : SDL_RELEASED);
         SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER, (data & 0x02) ? SDL_PRESSED : SDL_RELEASED);
@@ -1215,103 +1172,186 @@ static void HIDAPI_DriverPS5_VR2Sense_HandleStatePacketCommon(SDL_Joystick *joys
         SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_START, (data & 0x20) ? SDL_PRESSED : SDL_RELEASED);
         SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_LEFTSTICK, (data & 0x40) ? SDL_PRESSED : SDL_RELEASED);
         SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_RIGHTSTICK, (data & 0x80) ? SDL_PRESSED : SDL_RELEASED);
-    }
-
-    if (ctx->last_state.state.rgucButtonsAndHat[2] != packet->rgucButtonsAndHat[2]) {
-        Uint8 data = packet->rgucButtonsAndHat[2];
 
         SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_GUIDE, (data & 0x01) ? SDL_PRESSED : SDL_RELEASED);
         SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_MISC1, (data & 0x02) ? SDL_PRESSED : SDL_RELEASED);
-        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_PS5_TOUCHPAD, (data & 0x04) ? SDL_PRESSED : SDL_RELEASED);
-        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_PS5_LEFT_FUNCTION, (data & 0x10) ? SDL_PRESSED : SDL_RELEASED);
-        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_PS5_RIGHT_FUNCTION, (data & 0x20) ? SDL_PRESSED : SDL_RELEASED);
-        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_PS5_LEFT_PADDLE, (data & 0x40) ? SDL_PRESSED : SDL_RELEASED);
-        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_PS5_RIGHT_PADDLE, (data & 0x80) ? SDL_PRESSED : SDL_RELEASED);
+
+        SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_TRIGGERLEFT, axis);
+        SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_TRIGGERRIGHT, axis);
+        axis = ((int)packet->ucLeftJoystickX * 257) - 32768;
+        SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_LEFTX, axis);
+        axis = ((int)packet->ucLeftJoystickY * 257) - 32768;
+        SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_LEFTY, axis);
+        axis = ((int)packet->ucRightJoystickX * 257) - 32768;
+        SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_RIGHTX, axis);
+        axis = ((int)packet->ucRightJoystickY * 257) - 32768;
+        SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_RIGHTY, axis);
     }
 
-    if (packet->ucTriggerLeft == 0 && (packet->rgucButtonsAndHat[1] & 0x04)) {
-        axis = SDL_JOYSTICK_AXIS_MAX;
-    } else {
-        axis = ((int)packet->ucTriggerLeft * 257) - 32768;
-    }
-    SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_TRIGGERLEFT, axis);
-    if (packet->ucTriggerRight == 0 && (packet->rgucButtonsAndHat[1] & 0x08)) {
-        axis = SDL_JOYSTICK_AXIS_MAX;
-    } else {
-        axis = ((int)packet->ucTriggerRight * 257) - 32768;
-    }
-    SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_TRIGGERRIGHT, axis);
-    axis = ((int)packet->ucLeftJoystickX * 257) - 32768;
-    SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_LEFTX, axis);
-    axis = ((int)packet->ucLeftJoystickY * 257) - 32768;
-    SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_LEFTY, axis);
-    axis = ((int)packet->ucRightJoystickX * 257) - 32768;
-    SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_RIGHTX, axis);
-    axis = ((int)packet->ucRightJoystickY * 257) - 32768;
-    SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_RIGHTY, axis);
 
-    if (ctx->report_sensors) {
-        float data[3];
-        Uint64 timestamp_us;
 
-        if (ctx->use_alternate_report) {
-            /* 16-bit timestamp */
-            Uint16 timestamp;
+//    if (ctx->last_state.state.rgucButtonsAndHat[0] != packet->rgucButtonsAndHat[0]) {
+//        {
+//            Uint8 data = (packet->rgucButtonsAndHat[0] >> 4);
+//
+//            SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_X, (data & 0x01) ? SDL_PRESSED : SDL_RELEASED);
+//            SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_A, (data & 0x02) ? SDL_PRESSED : SDL_RELEASED);
+//            SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_B, (data & 0x04) ? SDL_PRESSED : SDL_RELEASED);
+//            SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_Y, (data & 0x08) ? SDL_PRESSED : SDL_RELEASED);
+//        }
+//        {
+//            Uint8 data = (packet->rgucButtonsAndHat[0] & 0x0F);
+//            SDL_bool dpad_up = SDL_FALSE;
+//            SDL_bool dpad_down = SDL_FALSE;
+//            SDL_bool dpad_left = SDL_FALSE;
+//            SDL_bool dpad_right = SDL_FALSE;
+//
+//            switch (data) {
+//            case 0:
+//                dpad_up = SDL_TRUE;
+//                break;
+//            case 1:
+//                dpad_up = SDL_TRUE;
+//                dpad_right = SDL_TRUE;
+//                break;
+//            case 2:
+//                dpad_right = SDL_TRUE;
+//                break;
+//            case 3:
+//                dpad_right = SDL_TRUE;
+//                dpad_down = SDL_TRUE;
+//                break;
+//            case 4:
+//                dpad_down = SDL_TRUE;
+//                break;
+//            case 5:
+//                dpad_left = SDL_TRUE;
+//                dpad_down = SDL_TRUE;
+//                break;
+//            case 6:
+//                dpad_left = SDL_TRUE;
+//                break;
+//            case 7:
+//                dpad_up = SDL_TRUE;
+//                dpad_left = SDL_TRUE;
+//                break;
+//            default:
+//                break;
+//            }
+//            SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_DPAD_DOWN, dpad_down);
+//            SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_DPAD_UP, dpad_up);
+//            SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_DPAD_RIGHT, dpad_right);
+//            SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_DPAD_LEFT, dpad_left);
+//        }
+//    }
+//
+//    if (ctx->last_state.state.rgucButtonsAndHat[1] != packet->rgucButtonsAndHat[1]) {
+//        Uint8 data = packet->rgucButtonsAndHat[1];
+//
+//        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_LEFTSHOULDER, (data & 0x01) ? SDL_PRESSED : SDL_RELEASED);
+//        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER, (data & 0x02) ? SDL_PRESSED : SDL_RELEASED);
+//        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_BACK, (data & 0x10) ? SDL_PRESSED : SDL_RELEASED);
+//        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_START, (data & 0x20) ? SDL_PRESSED : SDL_RELEASED);
+//        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_LEFTSTICK, (data & 0x40) ? SDL_PRESSED : SDL_RELEASED);
+//        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_RIGHTSTICK, (data & 0x80) ? SDL_PRESSED : SDL_RELEASED);
+//    }
+//
+//    if (ctx->last_state.state.rgucButtonsAndHat[2] != packet->rgucButtonsAndHat[2]) {
+//        Uint8 data = packet->rgucButtonsAndHat[2];
+//
+//        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_GUIDE, (data & 0x01) ? SDL_PRESSED : SDL_RELEASED);
+//        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_MISC1, (data & 0x02) ? SDL_PRESSED : SDL_RELEASED);
+//        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_PS5_TOUCHPAD, (data & 0x04) ? SDL_PRESSED : SDL_RELEASED);
+//        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_PS5_LEFT_FUNCTION, (data & 0x10) ? SDL_PRESSED : SDL_RELEASED);
+//        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_PS5_RIGHT_FUNCTION, (data & 0x20) ? SDL_PRESSED : SDL_RELEASED);
+//        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_PS5_LEFT_PADDLE, (data & 0x40) ? SDL_PRESSED : SDL_RELEASED);
+//        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_PS5_RIGHT_PADDLE, (data & 0x80) ? SDL_PRESSED : SDL_RELEASED);
+//    }
+//
+//    if (packet->ucTriggerLeft == 0 && (packet->rgucButtonsAndHat[1] & 0x04)) {
+//        axis = SDL_JOYSTICK_AXIS_MAX;
+//    } else {
+//        axis = ((int)packet->ucTriggerLeft * 257) - 32768;
+//    }
+//    SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_TRIGGERLEFT, axis);
+//    if (packet->ucTriggerRight == 0 && (packet->rgucButtonsAndHat[1] & 0x08)) {
+//        axis = SDL_JOYSTICK_AXIS_MAX;
+//    } else {
+//        axis = ((int)packet->ucTriggerRight * 257) - 32768;
+//    }
+//    SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_TRIGGERRIGHT, axis);
+//    axis = ((int)packet->ucLeftJoystickX * 257) - 32768;
+//    SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_LEFTX, axis);
+//    axis = ((int)packet->ucLeftJoystickY * 257) - 32768;
+//    SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_LEFTY, axis);
+//    axis = ((int)packet->ucRightJoystickX * 257) - 32768;
+//    SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_RIGHTX, axis);
+//    axis = ((int)packet->ucRightJoystickY * 257) - 32768;
+//    SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_RIGHTY, axis);
+//
+//    if (ctx->report_sensors) {
+//        float data[3];
+//        Uint64 timestamp_us;
+//
+//        if (ctx->use_alternate_report) {
+//            /* 16-bit timestamp */
+//            Uint16 timestamp;
+//
+//            timestamp = LOAD16(packet->rgucSensorTimestamp[0],
+//                               packet->rgucSensorTimestamp[1]);
+//            if (ctx->timestamp) {
+//                Uint16 delta;
+//
+//                if (ctx->last_timestamp > timestamp) {
+//                    delta = (SDL_MAX_UINT16 - ctx->last_timestamp + timestamp + 1);
+//                } else {
+//                    delta = (timestamp - ctx->last_timestamp);
+//                }
+//                ctx->timestamp += delta;
+//            } else {
+//                ctx->timestamp = timestamp;
+//            }
+//            ctx->last_timestamp = timestamp;
+//
+//            /* Sensor timestamp is in 1us units */
+//            timestamp_us = ctx->timestamp;
+//        } else {
+//            /* 32-bit timestamp */
+//            Uint32 timestamp;
+//
+//            timestamp = LOAD32(packet->rgucSensorTimestamp[0],
+//                               packet->rgucSensorTimestamp[1],
+//                               packet->rgucSensorTimestamp[2],
+//                               packet->rgucSensorTimestamp[3]);
+//            if (ctx->timestamp) {
+//                Uint32 delta;
+//
+//                if (ctx->last_timestamp > timestamp) {
+//                    delta = (SDL_MAX_UINT32 - ctx->last_timestamp + timestamp + 1);
+//                } else {
+//                    delta = (timestamp - ctx->last_timestamp);
+//                }
+//                ctx->timestamp += delta;
+//            } else {
+//                ctx->timestamp = timestamp;
+//            }
+//            ctx->last_timestamp = timestamp;
+//
+//            /* Sensor timestamp is in 0.33us units */
+//            timestamp_us = ctx->timestamp / 3;
+//        }
+//
+//        data[0] = HIDAPI_DriverPS5_VR2Sense_ApplyCalibrationData(ctx, 0, LOAD16(packet->rgucGyroX[0], packet->rgucGyroX[1]));
+//        data[1] = HIDAPI_DriverPS5_VR2Sense_ApplyCalibrationData(ctx, 1, LOAD16(packet->rgucGyroY[0], packet->rgucGyroY[1]));
+//        data[2] = HIDAPI_DriverPS5_VR2Sense_ApplyCalibrationData(ctx, 2, LOAD16(packet->rgucGyroZ[0], packet->rgucGyroZ[1]));
+//        SDL_PrivateJoystickSensor(joystick, SDL_SENSOR_GYRO, timestamp_us, data, 3);
+//
+//        data[0] = HIDAPI_DriverPS5_VR2Sense_ApplyCalibrationData(ctx, 3, LOAD16(packet->rgucAccelX[0], packet->rgucAccelX[1]));
+//        data[1] = HIDAPI_DriverPS5_VR2Sense_ApplyCalibrationData(ctx, 4, LOAD16(packet->rgucAccelY[0], packet->rgucAccelY[1]));
+//        data[2] = HIDAPI_DriverPS5_VR2Sense_ApplyCalibrationData(ctx, 5, LOAD16(packet->rgucAccelZ[0], packet->rgucAccelZ[1]));
+//        SDL_PrivateJoystickSensor(joystick, SDL_SENSOR_ACCEL, timestamp_us, data, 3);
+//    }
 
-            timestamp = LOAD16(packet->rgucSensorTimestamp[0],
-                               packet->rgucSensorTimestamp[1]);
-            if (ctx->timestamp) {
-                Uint16 delta;
-
-                if (ctx->last_timestamp > timestamp) {
-                    delta = (SDL_MAX_UINT16 - ctx->last_timestamp + timestamp + 1);
-                } else {
-                    delta = (timestamp - ctx->last_timestamp);
-                }
-                ctx->timestamp += delta;
-            } else {
-                ctx->timestamp = timestamp;
-            }
-            ctx->last_timestamp = timestamp;
-
-            /* Sensor timestamp is in 1us units */
-            timestamp_us = ctx->timestamp;
-        } else {
-            /* 32-bit timestamp */
-            Uint32 timestamp;
-
-            timestamp = LOAD32(packet->rgucSensorTimestamp[0],
-                               packet->rgucSensorTimestamp[1],
-                               packet->rgucSensorTimestamp[2],
-                               packet->rgucSensorTimestamp[3]);
-            if (ctx->timestamp) {
-                Uint32 delta;
-
-                if (ctx->last_timestamp > timestamp) {
-                    delta = (SDL_MAX_UINT32 - ctx->last_timestamp + timestamp + 1);
-                } else {
-                    delta = (timestamp - ctx->last_timestamp);
-                }
-                ctx->timestamp += delta;
-            } else {
-                ctx->timestamp = timestamp;
-            }
-            ctx->last_timestamp = timestamp;
-
-            /* Sensor timestamp is in 0.33us units */
-            timestamp_us = ctx->timestamp / 3;
-        }
-
-        data[0] = HIDAPI_DriverPS5_VR2Sense_ApplyCalibrationData(ctx, 0, LOAD16(packet->rgucGyroX[0], packet->rgucGyroX[1]));
-        data[1] = HIDAPI_DriverPS5_VR2Sense_ApplyCalibrationData(ctx, 1, LOAD16(packet->rgucGyroY[0], packet->rgucGyroY[1]));
-        data[2] = HIDAPI_DriverPS5_VR2Sense_ApplyCalibrationData(ctx, 2, LOAD16(packet->rgucGyroZ[0], packet->rgucGyroZ[1]));
-        SDL_PrivateJoystickSensor(joystick, SDL_SENSOR_GYRO, timestamp_us, data, 3);
-
-        data[0] = HIDAPI_DriverPS5_VR2Sense_ApplyCalibrationData(ctx, 3, LOAD16(packet->rgucAccelX[0], packet->rgucAccelX[1]));
-        data[1] = HIDAPI_DriverPS5_VR2Sense_ApplyCalibrationData(ctx, 4, LOAD16(packet->rgucAccelY[0], packet->rgucAccelY[1]));
-        data[2] = HIDAPI_DriverPS5_VR2Sense_ApplyCalibrationData(ctx, 5, LOAD16(packet->rgucAccelZ[0], packet->rgucAccelZ[1]));
-        SDL_PrivateJoystickSensor(joystick, SDL_SENSOR_ACCEL, timestamp_us, data, 3);
-    }
 }
 
 static void HIDAPI_DriverPS5_VR2Sense_HandleStatePacket(SDL_Joystick *joystick, SDL_hid_device *dev, SDL_DriverPS5_Context *ctx, PS5StatePacket_t *packet)
@@ -1438,7 +1478,7 @@ static SDL_bool HIDAPI_DriverPS5_VR2Sense_UpdateDevice(SDL_HIDAPI_Device *device
     }
 
     while ((size = SDL_hid_read_timeout(device->dev, data, sizeof(data), 0)) > 0) {
-#ifdef DEBUG_PS5_PROTOCOL
+#if 1 //def DEBUG_PS5_PROTOCOL
         HIDAPI_DumpPacket("PS5 packet: size = %d", data, size);
 #endif
         if (!HIDAPI_DriverPS5_VR2Sense_IsPacketValid(ctx, data, size)) {
