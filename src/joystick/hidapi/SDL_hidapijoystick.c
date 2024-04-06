@@ -65,6 +65,9 @@ static SDL_HIDAPI_DeviceDriver *SDL_HIDAPI_drivers[] = {
 #ifdef SDL_JOYSTICK_HIDAPI_PS5
     &SDL_HIDAPI_DriverPS5,
 #endif
+#ifdef SDL_JOYSTICK_HIDAPI_PS5_VR2_SENSE
+    &SDL_HIDAPI_DriverPS5VR2Sense,
+#endif
 #ifdef SDL_JOYSTICK_HIDAPI_STADIA
     &SDL_HIDAPI_DriverStadia,
 #endif

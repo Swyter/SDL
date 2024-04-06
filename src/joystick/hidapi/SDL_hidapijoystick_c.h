@@ -37,6 +37,7 @@
 #define SDL_JOYSTICK_HIDAPI_PS3
 #define SDL_JOYSTICK_HIDAPI_PS4
 #define SDL_JOYSTICK_HIDAPI_PS5
+#define SDL_JOYSTICK_HIDAPI_PS5_VR2_SENSE
 #define SDL_JOYSTICK_HIDAPI_STADIA
 #define SDL_JOYSTICK_HIDAPI_STEAM /* Simple support for BLE Steam Controller, hint is disabled by default */
 #define SDL_JOYSTICK_HIDAPI_STEAMDECK
@@ -139,6 +140,7 @@ extern SDL_HIDAPI_DeviceDriver SDL_HIDAPI_DriverPS3;
 extern SDL_HIDAPI_DeviceDriver SDL_HIDAPI_DriverPS3ThirdParty;
 extern SDL_HIDAPI_DeviceDriver SDL_HIDAPI_DriverPS4;
 extern SDL_HIDAPI_DeviceDriver SDL_HIDAPI_DriverPS5;
+extern SDL_HIDAPI_DeviceDriver SDL_HIDAPI_DriverPS5VR2Sense;
 extern SDL_HIDAPI_DeviceDriver SDL_HIDAPI_DriverShield;
 extern SDL_HIDAPI_DeviceDriver SDL_HIDAPI_DriverStadia;
 extern SDL_HIDAPI_DeviceDriver SDL_HIDAPI_DriverSteam;
