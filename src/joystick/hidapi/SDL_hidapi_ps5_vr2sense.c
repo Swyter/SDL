@@ -1152,19 +1152,20 @@ static void HIDAPI_DriverPS5_VR2Sense_HandleStatePacketCommon(SDL_Joystick *joys
     Sint16 axis;
 
     /*
-      data[9] 1 - create
-      data[8] 8 - triangle
-      data[8] 1 - square
+      LEFT
+      data[9] 1 - create click
+      data[8] 8 - triangle click
+      data[8] 1 - square click
       data[3] 0xff - l2 (analog)
       data[4] 0xff - l2 capacitative finger proximity pre-touch (analog)
       data[4] 0xff - l1 capacitative finger proximity pre-touch (analog)
 
-      data[8] 0x10 - r1 on/off
+      data[8] 0x10 - l1 on/off
       data[9] 0x10 - PS button on/off
 
-      9 4 r3
-      1 x analog
-      2 y analog
+      data[9] 4    - l3 click
+      data[1] 0xff - x analog
+      data[2] 0xff - y analog
     */
 
     if (1) {
