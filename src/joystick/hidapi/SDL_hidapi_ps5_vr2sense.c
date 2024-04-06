@@ -1194,44 +1194,44 @@ static void HIDAPI_DriverPS5_VR2Sense_HandleStatePacketCommon(SDL_Joystick *joys
 
     if (1) {
         Uint8 data = (((uint8_t*) packet)[0] >> 4);
-        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_X /* swy: square */, ((((uint8_t*) packet)[8]) & 0x01) ? SDL_PRESSED : SDL_RELEASED);
-        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_A /* swy: cross */, ((((uint8_t*) packet)[8]) & 0x02) ? SDL_PRESSED : SDL_RELEASED);
-        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_B /* swy: circle */, ((((uint8_t*) packet)[8]) & 0x04) ? SDL_PRESSED : SDL_RELEASED);
-        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_Y /* swy: triangle */, ((((uint8_t*) packet)[8]) & 0x08) ? SDL_PRESSED : SDL_RELEASED);
+        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_X /* swy: square */, ((((uint8_t*) packet)[8-1]) & 0x01) ? SDL_PRESSED : SDL_RELEASED);
+        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_A /* swy: cross */, ((((uint8_t*) packet)[8-1]) & 0x02) ? SDL_PRESSED : SDL_RELEASED);
+        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_B /* swy: circle */, ((((uint8_t*) packet)[8-1]) & 0x04) ? SDL_PRESSED : SDL_RELEASED);
+        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_Y /* swy: triangle */, ((((uint8_t*) packet)[8-1]) & 0x08) ? SDL_PRESSED : SDL_RELEASED);
 
-        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_LEFTSHOULDER, ((((uint8_t*) packet)[8]) & 0x10) ? SDL_PRESSED : SDL_RELEASED);
-        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER, ((((uint8_t*) packet)[8]) & 0x20) ? SDL_PRESSED : SDL_RELEASED);
-        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_BACK, ((((uint8_t*) packet)[9]) & 0x01) ? SDL_PRESSED : SDL_RELEASED);
-        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_START, ((((uint8_t*) packet)[9]) & 0x02) ? SDL_PRESSED : SDL_RELEASED);
-        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_LEFTSTICK, ((((uint8_t*) packet)[9]) & 0x04) ? SDL_PRESSED : SDL_RELEASED);
-        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_RIGHTSTICK, ((((uint8_t*) packet)[9]) & 0x08) ? SDL_PRESSED : SDL_RELEASED);
+        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_LEFTSHOULDER, ((((uint8_t*) packet)[8-1]) & 0x10) ? SDL_PRESSED : SDL_RELEASED);
+        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER, ((((uint8_t*) packet)[8-1]) & 0x20) ? SDL_PRESSED : SDL_RELEASED);
+        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_BACK, ((((uint8_t*) packet)[9-1]) & 0x01) ? SDL_PRESSED : SDL_RELEASED);
+        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_START, ((((uint8_t*) packet)[9-1]) & 0x02) ? SDL_PRESSED : SDL_RELEASED);
+        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_LEFTSTICK, ((((uint8_t*) packet)[9-1]) & 0x04) ? SDL_PRESSED : SDL_RELEASED);
+        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_RIGHTSTICK, ((((uint8_t*) packet)[9-1]) & 0x08) ? SDL_PRESSED : SDL_RELEASED);
 
-        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_GUIDE, ((((uint8_t*) packet)[9]) & 0x10) ? SDL_PRESSED : SDL_RELEASED);
+        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_GUIDE, ((((uint8_t*) packet)[9-1]) & 0x10) ? SDL_PRESSED : SDL_RELEASED);
         //SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_MISC1, (data & 0x02) ? SDL_PRESSED : SDL_RELEASED);
 
         if (1) {
-            axis = ((uint8_t *) packet)[3];
+            axis = ((uint8_t *) packet)[3-1];
             axis = ((int)axis * 257) - 32768;
             SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_TRIGGERLEFT, axis);
         } else {
-            axis = ((uint8_t *) packet)[3];
+            axis = ((uint8_t *) packet)[3-1];
             axis = ((int)axis * 257) - 32768;
             SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_TRIGGERRIGHT, axis);
         }
 
 
         if (1) {
-            axis = ((uint8_t *) packet)[1];
+            axis = ((uint8_t *) packet)[1-1];
             axis = ((int)axis * 257) - 32768;
             SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_LEFTX, axis);
-            axis = ((uint8_t *) packet)[2];
+            axis = ((uint8_t *) packet)[2-1];
             axis = ((int)axis * 257) - 32768;
             SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_LEFTY, axis);
         } else {
-            axis = ((uint8_t *) packet)[1];
+            axis = ((uint8_t *) packet)[1-1];
             axis = ((int)axis * 257) - 32768;
             SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_RIGHTX, axis); 
-            axis = ((uint8_t *) packet)[2];
+            axis = ((uint8_t *) packet)[2-1];
             axis = ((int)axis * 257) - 32768;
             SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_RIGHTY, axis);
         }
@@ -1544,7 +1544,7 @@ static SDL_bool HIDAPI_DriverPS5_VR2Sense_UpdateDevice(SDL_HIDAPI_Device *device
         switch (data[0]) {
         case k_EPS5ReportIdState:
             if (size == 10 || size == 78) {
-                HIDAPI_DriverPS5_VR2Sense_HandleSimpleStatePacket(joystick, device->dev, ctx, (PS5SimpleStatePacket_t *)&data[1]);
+                //HIDAPI_DriverPS5_VR2Sense_HandleSimpleStatePacket(joystick, device->dev, ctx, (PS5SimpleStatePacket_t *)&data[1]);
             } else {
                 HIDAPI_DriverPS5_VR2Sense_HandleStatePacketCommon(joystick, device->dev, ctx, (PS5StatePacketCommon_t *)&data[1]);
                 if (ctx->use_alternate_report) {
