@@ -34,7 +34,7 @@
 #ifdef SDL_JOYSTICK_HIDAPI_PS5_VR2_SENSE
 
 /* Define this if you want to log all packets from the controller */
-/*#define DEBUG_PS5_PROTOCOL*/
+#define DEBUG_PS5_PROTOCOL
 
 /* Define this if you want to log calibration data */
 /*#define DEBUG_PS5_CALIBRATION*/
@@ -253,19 +253,19 @@ typedef struct
     } last_state;
 } SDL_DriverPS5_Context;
 
-static int HIDAPI_DriverPS5_SendJoystickEffect(SDL_HIDAPI_Device *device, SDL_Joystick *joystick, const void *effect, int size);
+static int HIDAPI_DriverPS5_VR2Sense_SendJoystickEffect(SDL_HIDAPI_Device *device, SDL_Joystick *joystick, const void *effect, int size);
 
-static void HIDAPI_DriverPS5_RegisterHints(SDL_HintCallback callback, void *userdata)
+static void HIDAPI_DriverPS5_VR2Sense_RegisterHints(SDL_HintCallback callback, void *userdata)
 {
-    SDL_AddHintCallback(SDL_HINT_JOYSTICK_HIDAPI_PS5, callback, userdata);
+    //SDL_AddHintCallback(SDL_HINT_JOYSTICK_HIDAPI_PS5, callback, userdata);
 }
 
-static void HIDAPI_DriverPS5_UnregisterHints(SDL_HintCallback callback, void *userdata)
+static void HIDAPI_DriverPS5_VR2Sense_UnregisterHints(SDL_HintCallback callback, void *userdata)
 {
-    SDL_DelHintCallback(SDL_HINT_JOYSTICK_HIDAPI_PS5, callback, userdata);
+    //SDL_DelHintCallback(SDL_HINT_JOYSTICK_HIDAPI_PS5, callback, userdata);
 }
 
-static SDL_bool HIDAPI_DriverPS5_IsEnabled(void)
+static SDL_bool HIDAPI_DriverPS5_VR2Sense_IsEnabled(void)
 {
     return SDL_GetHintBoolean(SDL_HINT_JOYSTICK_HIDAPI_PS5, SDL_GetHintBoolean(SDL_HINT_JOYSTICK_HIDAPI, SDL_HIDAPI_DEFAULT));
 }
@@ -277,19 +277,19 @@ static int ReadFeatureReport(SDL_hid_device *dev, Uint8 report_id, Uint8 *report
     return SDL_hid_get_feature_report(dev, report, length);
 }
 
-static SDL_bool HIDAPI_DriverPS5_IsSupportedDevice(SDL_HIDAPI_Device *device, const char *name, SDL_GameControllerType type, Uint16 vendor_id, Uint16 product_id, Uint16 version, int interface_number, int interface_class, int interface_subclass, int interface_protocol)
+static SDL_bool HIDAPI_DriverPS5_VR2Sense_IsSupportedDevice(SDL_HIDAPI_Device *device, const char *name, SDL_GameControllerType type, Uint16 vendor_id, Uint16 product_id, Uint16 version, int interface_number, int interface_class, int interface_subclass, int interface_protocol)
 {
     Uint8 data[USB_PACKET_LENGTH];
     int size;
 
-    if (type == SDL_CONTROLLER_TYPE_PS5) {
-        return SDL_TRUE;
-    }
+    //if (type == SDL_CONTROLLER_TYPE_PS5) {
+    //    return SDL_TRUE;
+    //}
 
-    if (HIDAPI_SupportsPlaystationDetection(vendor_id, product_id)) {
+    //if (HIDAPI_SupportsPlaystationDetection(vendor_id, product_id)) {
         if (device && device->dev) {
-            size = ReadFeatureReport(device->dev, k_EPS5FeatureReportIdCapabilities, data, sizeof(data));
-            if (size == 48 && data[2] == 0x28) {
+            size = ReadFeatureReport(device->dev, k_EPS5FeatureReportIdCalibration, data, sizeof(data));
+            if (1) { // size == 48 && data[2] == 0x28) {
                 /* Supported third party controller */
                 return SDL_TRUE;
             } else {
@@ -299,7 +299,7 @@ static SDL_bool HIDAPI_DriverPS5_IsSupportedDevice(SDL_HIDAPI_Device *device, co
             /* Might be supported by this driver, enumerate and find out */
             return SDL_TRUE;
         }
-    }
+    //}
     return SDL_FALSE;
 }
 
@@ -348,7 +348,7 @@ static void SetLightsForPlayerIndex(DS5EffectsState_t *effects, int player_index
     }
 }
 
-static SDL_bool HIDAPI_DriverPS5_InitDevice(SDL_HIDAPI_Device *device)
+static SDL_bool HIDAPI_DriverPS5_VR2Sense_InitDevice(SDL_HIDAPI_Device *device)
 {
     SDL_DriverPS5_Context *ctx;
     Uint8 data[USB_PACKET_LENGTH * 2];
@@ -535,12 +535,12 @@ static SDL_bool HIDAPI_DriverPS5_InitDevice(SDL_HIDAPI_Device *device)
     return HIDAPI_JoystickConnected(device, NULL);
 }
 
-static int HIDAPI_DriverPS5_GetDevicePlayerIndex(SDL_HIDAPI_Device *device, SDL_JoystickID instance_id)
+static int HIDAPI_DriverPS5_VR2Sense_GetDevicePlayerIndex(SDL_HIDAPI_Device *device, SDL_JoystickID instance_id)
 {
     return -1;
 }
 
-static void HIDAPI_DriverPS5_LoadCalibrationData(SDL_HIDAPI_Device *device)
+static void HIDAPI_DriverPS5_VR2Sense_LoadCalibrationData(SDL_HIDAPI_Device *device)
 {
     SDL_DriverPS5_Context *ctx = (SDL_DriverPS5_Context *)device->context;
     int i, size;
@@ -632,7 +632,7 @@ static void HIDAPI_DriverPS5_LoadCalibrationData(SDL_HIDAPI_Device *device)
     }
 }
 
-static float HIDAPI_DriverPS5_ApplyCalibrationData(SDL_DriverPS5_Context *ctx, int index, Sint16 value)
+static float HIDAPI_DriverPS5_VR2Sense_ApplyCalibrationData(SDL_DriverPS5_Context *ctx, int index, Sint16 value)
 {
     float result;
 
@@ -655,7 +655,7 @@ static float HIDAPI_DriverPS5_ApplyCalibrationData(SDL_DriverPS5_Context *ctx, i
     return result;
 }
 
-static int HIDAPI_DriverPS5_UpdateEffects(SDL_HIDAPI_Device *device, int effect_mask)
+static int HIDAPI_DriverPS5_VR2Sense_UpdateEffects(SDL_HIDAPI_Device *device, int effect_mask)
 {
     SDL_DriverPS5_Context *ctx = (SDL_DriverPS5_Context *)device->context;
     DS5EffectsState_t effects;
@@ -735,10 +735,10 @@ static int HIDAPI_DriverPS5_UpdateEffects(SDL_HIDAPI_Device *device, int effect_
         effects.ucMicLightMode = 0; /* Bitmask, 0x00 = off, 0x01 = solid, 0x02 = pulse */
     }
 
-    return HIDAPI_DriverPS5_SendJoystickEffect(device, ctx->joystick, &effects, sizeof(effects));
+    return HIDAPI_DriverPS5_VR2Sense_SendJoystickEffect(device, ctx->joystick, &effects, sizeof(effects));
 }
 
-static void HIDAPI_DriverPS5_CheckPendingLEDReset(SDL_HIDAPI_Device *device)
+static void HIDAPI_DriverPS5_VR2Sense_CheckPendingLEDReset(SDL_HIDAPI_Device *device)
 {
     SDL_DriverPS5_Context *ctx = (SDL_DriverPS5_Context *)device->context;
     SDL_bool led_reset_complete = SDL_FALSE;
@@ -761,15 +761,15 @@ static void HIDAPI_DriverPS5_CheckPendingLEDReset(SDL_HIDAPI_Device *device)
     }
 
     if (led_reset_complete) {
-        HIDAPI_DriverPS5_UpdateEffects(device, k_EDS5EffectLEDReset);
+        HIDAPI_DriverPS5_VR2Sense_UpdateEffects(device, k_EDS5EffectLEDReset);
 
         ctx->led_reset_state = k_EDS5LEDResetStateComplete;
 
-        HIDAPI_DriverPS5_UpdateEffects(device, (k_EDS5EffectLED | k_EDS5EffectPadLights));
+        HIDAPI_DriverPS5_VR2Sense_UpdateEffects(device, (k_EDS5EffectLED | k_EDS5EffectPadLights));
     }
 }
 
-static void HIDAPI_DriverPS5_TickleBluetooth(SDL_HIDAPI_Device *device)
+static void HIDAPI_DriverPS5_VR2Sense_TickleBluetooth(SDL_HIDAPI_Device *device)
 {
     SDL_DriverPS5_Context *ctx = (SDL_DriverPS5_Context *)device->context;
 
@@ -793,7 +793,7 @@ static void HIDAPI_DriverPS5_TickleBluetooth(SDL_HIDAPI_Device *device)
     }
 }
 
-static void HIDAPI_DriverPS5_SetEnhancedMode(SDL_HIDAPI_Device *device, SDL_Joystick *joystick)
+static void HIDAPI_DriverPS5_VR2Sense_SetEnhancedMode(SDL_HIDAPI_Device *device, SDL_Joystick *joystick)
 {
     SDL_DriverPS5_Context *ctx = (SDL_DriverPS5_Context *)device->context;
 
@@ -816,10 +816,10 @@ static void HIDAPI_DriverPS5_SetEnhancedMode(SDL_HIDAPI_Device *device, SDL_Joys
         }
 
         /* Switch into enhanced report mode */
-        HIDAPI_DriverPS5_UpdateEffects(device, 0);
+        HIDAPI_DriverPS5_VR2Sense_UpdateEffects(device, 0);
 
         /* Update the light effects */
-        HIDAPI_DriverPS5_UpdateEffects(device, (k_EDS5EffectLED | k_EDS5EffectPadLights));
+        HIDAPI_DriverPS5_VR2Sense_UpdateEffects(device, (k_EDS5EffectLED | k_EDS5EffectPadLights));
     }
 }
 
@@ -829,7 +829,7 @@ static void SDLCALL SDL_PS5RumbleHintChanged(void *userdata, const char *name, c
 
     /* This is a one-way trip, you can't switch the controller back to simple report mode */
     if (SDL_GetStringBoolean(hint, SDL_FALSE)) {
-        HIDAPI_DriverPS5_SetEnhancedMode(ctx->device, ctx->joystick);
+        HIDAPI_DriverPS5_VR2Sense_SetEnhancedMode(ctx->device, ctx->joystick);
     }
 }
 
@@ -841,11 +841,11 @@ static void SDLCALL SDL_PS5PlayerLEDHintChanged(void *userdata, const char *name
     if (player_lights != ctx->player_lights) {
         ctx->player_lights = player_lights;
 
-        HIDAPI_DriverPS5_UpdateEffects(ctx->device, k_EDS5EffectPadLights);
+        HIDAPI_DriverPS5_VR2Sense_UpdateEffects(ctx->device, k_EDS5EffectPadLights);
     }
 }
 
-static void HIDAPI_DriverPS5_SetDevicePlayerIndex(SDL_HIDAPI_Device *device, SDL_JoystickID instance_id, int player_index)
+static void HIDAPI_DriverPS5_VR2Sense_SetDevicePlayerIndex(SDL_HIDAPI_Device *device, SDL_JoystickID instance_id, int player_index)
 {
     SDL_DriverPS5_Context *ctx = (SDL_DriverPS5_Context *)device->context;
 
@@ -856,10 +856,10 @@ static void HIDAPI_DriverPS5_SetDevicePlayerIndex(SDL_HIDAPI_Device *device, SDL
     ctx->player_index = player_index;
 
     /* This will set the new LED state based on the new player index */
-    HIDAPI_DriverPS5_UpdateEffects(device, (k_EDS5EffectLED | k_EDS5EffectPadLights));
+    HIDAPI_DriverPS5_VR2Sense_UpdateEffects(device, (k_EDS5EffectLED | k_EDS5EffectPadLights));
 }
 
-static SDL_bool HIDAPI_DriverPS5_OpenJoystick(SDL_HIDAPI_Device *device, SDL_Joystick *joystick)
+static SDL_bool HIDAPI_DriverPS5_VR2Sense_OpenJoystick(SDL_HIDAPI_Device *device, SDL_Joystick *joystick)
 {
     SDL_DriverPS5_Context *ctx = (SDL_DriverPS5_Context *)device->context;
 
@@ -894,7 +894,7 @@ static SDL_bool HIDAPI_DriverPS5_OpenJoystick(SDL_HIDAPI_Device *device, SDL_Joy
     if (ctx->enhanced_mode) {
         /* Force initialization when opening the joystick */
         ctx->enhanced_mode = SDL_FALSE;
-        HIDAPI_DriverPS5_SetEnhancedMode(device, joystick);
+        HIDAPI_DriverPS5_VR2Sense_SetEnhancedMode(device, joystick);
     } else {
         SDL_AddHintCallback(SDL_HINT_JOYSTICK_HIDAPI_PS5_RUMBLE,
                             SDL_PS5RumbleHintChanged, ctx);
@@ -905,7 +905,7 @@ static SDL_bool HIDAPI_DriverPS5_OpenJoystick(SDL_HIDAPI_Device *device, SDL_Joy
     return SDL_TRUE;
 }
 
-static int HIDAPI_DriverPS5_RumbleJoystick(SDL_HIDAPI_Device *device, SDL_Joystick *joystick, Uint16 low_frequency_rumble, Uint16 high_frequency_rumble)
+static int HIDAPI_DriverPS5_VR2Sense_RumbleJoystick(SDL_HIDAPI_Device *device, SDL_Joystick *joystick, Uint16 low_frequency_rumble, Uint16 high_frequency_rumble)
 {
     SDL_DriverPS5_Context *ctx = (SDL_DriverPS5_Context *)device->context;
 
@@ -914,21 +914,21 @@ static int HIDAPI_DriverPS5_RumbleJoystick(SDL_HIDAPI_Device *device, SDL_Joysti
     }
 
     if (!ctx->rumble_left && !ctx->rumble_right) {
-        HIDAPI_DriverPS5_UpdateEffects(device, k_EDS5EffectRumbleStart);
+        HIDAPI_DriverPS5_VR2Sense_UpdateEffects(device, k_EDS5EffectRumbleStart);
     }
 
     ctx->rumble_left = (low_frequency_rumble >> 8);
     ctx->rumble_right = (high_frequency_rumble >> 8);
 
-    return HIDAPI_DriverPS5_UpdateEffects(device, k_EDS5EffectRumble);
+    return HIDAPI_DriverPS5_VR2Sense_UpdateEffects(device, k_EDS5EffectRumble);
 }
 
-static int HIDAPI_DriverPS5_RumbleJoystickTriggers(SDL_HIDAPI_Device *device, SDL_Joystick *joystick, Uint16 left_rumble, Uint16 right_rumble)
+static int HIDAPI_DriverPS5_VR2Sense_RumbleJoystickTriggers(SDL_HIDAPI_Device *device, SDL_Joystick *joystick, Uint16 left_rumble, Uint16 right_rumble)
 {
     return SDL_Unsupported();
 }
 
-static Uint32 HIDAPI_DriverPS5_GetJoystickCapabilities(SDL_HIDAPI_Device *device, SDL_Joystick *joystick)
+static Uint32 HIDAPI_DriverPS5_VR2Sense_GetJoystickCapabilities(SDL_HIDAPI_Device *device, SDL_Joystick *joystick)
 {
     SDL_DriverPS5_Context *ctx = (SDL_DriverPS5_Context *)device->context;
     Uint32 result = 0;
@@ -945,7 +945,7 @@ static Uint32 HIDAPI_DriverPS5_GetJoystickCapabilities(SDL_HIDAPI_Device *device
     return result;
 }
 
-static int HIDAPI_DriverPS5_SetJoystickLED(SDL_HIDAPI_Device *device, SDL_Joystick *joystick, Uint8 red, Uint8 green, Uint8 blue)
+static int HIDAPI_DriverPS5_VR2Sense_SetJoystickLED(SDL_HIDAPI_Device *device, SDL_Joystick *joystick, Uint8 red, Uint8 green, Uint8 blue)
 {
     SDL_DriverPS5_Context *ctx = (SDL_DriverPS5_Context *)device->context;
 
@@ -958,10 +958,10 @@ static int HIDAPI_DriverPS5_SetJoystickLED(SDL_HIDAPI_Device *device, SDL_Joysti
     ctx->led_green = green;
     ctx->led_blue = blue;
 
-    return HIDAPI_DriverPS5_UpdateEffects(device, k_EDS5EffectLED);
+    return HIDAPI_DriverPS5_VR2Sense_UpdateEffects(device, k_EDS5EffectLED);
 }
 
-static int HIDAPI_DriverPS5_SendJoystickEffect(SDL_HIDAPI_Device *device, SDL_Joystick *joystick, const void *effect, int size)
+static int HIDAPI_DriverPS5_VR2Sense_SendJoystickEffect(SDL_HIDAPI_Device *device, SDL_Joystick *joystick, const void *effect, int size)
 {
     SDL_DriverPS5_Context *ctx = (SDL_DriverPS5_Context *)device->context;
     Uint8 data[78];
@@ -975,7 +975,7 @@ static int HIDAPI_DriverPS5_SendJoystickEffect(SDL_HIDAPI_Device *device, SDL_Jo
     }
 
     if (!ctx->enhanced_mode) {
-        HIDAPI_DriverPS5_SetEnhancedMode(device, joystick);
+        HIDAPI_DriverPS5_VR2Sense_SetEnhancedMode(device, joystick);
     }
 
     SDL_zeroa(data);
@@ -1029,7 +1029,7 @@ static int HIDAPI_DriverPS5_SendJoystickEffect(SDL_HIDAPI_Device *device, SDL_Jo
     return 0;
 }
 
-static int HIDAPI_DriverPS5_SetJoystickSensorsEnabled(SDL_HIDAPI_Device *device, SDL_Joystick *joystick, SDL_bool enabled)
+static int HIDAPI_DriverPS5_VR2Sense_SetJoystickSensorsEnabled(SDL_HIDAPI_Device *device, SDL_Joystick *joystick, SDL_bool enabled)
 {
     SDL_DriverPS5_Context *ctx = (SDL_DriverPS5_Context *)device->context;
 
@@ -1038,7 +1038,7 @@ static int HIDAPI_DriverPS5_SetJoystickSensorsEnabled(SDL_HIDAPI_Device *device,
     }
 
     if (enabled) {
-        HIDAPI_DriverPS5_LoadCalibrationData(device);
+        HIDAPI_DriverPS5_VR2Sense_LoadCalibrationData(device);
     }
     ctx->report_sensors = enabled;
     ctx->timestamp = 0;
@@ -1046,7 +1046,7 @@ static int HIDAPI_DriverPS5_SetJoystickSensorsEnabled(SDL_HIDAPI_Device *device,
     return 0;
 }
 
-static void HIDAPI_DriverPS5_HandleSimpleStatePacket(SDL_Joystick *joystick, SDL_hid_device *dev, SDL_DriverPS5_Context *ctx, PS5SimpleStatePacket_t *packet)
+static void HIDAPI_DriverPS5_VR2Sense_HandleSimpleStatePacket(SDL_Joystick *joystick, SDL_hid_device *dev, SDL_DriverPS5_Context *ctx, PS5SimpleStatePacket_t *packet)
 {
     Sint16 axis;
 
@@ -1147,7 +1147,7 @@ static void HIDAPI_DriverPS5_HandleSimpleStatePacket(SDL_Joystick *joystick, SDL
     SDL_memcpy(&ctx->last_state.simple, packet, sizeof(ctx->last_state.simple));
 }
 
-static void HIDAPI_DriverPS5_HandleStatePacketCommon(SDL_Joystick *joystick, SDL_hid_device *dev, SDL_DriverPS5_Context *ctx, PS5StatePacketCommon_t *packet)
+static void HIDAPI_DriverPS5_VR2Sense_HandleStatePacketCommon(SDL_Joystick *joystick, SDL_hid_device *dev, SDL_DriverPS5_Context *ctx, PS5StatePacketCommon_t *packet)
 {
     Sint16 axis;
 
@@ -1302,19 +1302,19 @@ static void HIDAPI_DriverPS5_HandleStatePacketCommon(SDL_Joystick *joystick, SDL
             timestamp_us = ctx->timestamp / 3;
         }
 
-        data[0] = HIDAPI_DriverPS5_ApplyCalibrationData(ctx, 0, LOAD16(packet->rgucGyroX[0], packet->rgucGyroX[1]));
-        data[1] = HIDAPI_DriverPS5_ApplyCalibrationData(ctx, 1, LOAD16(packet->rgucGyroY[0], packet->rgucGyroY[1]));
-        data[2] = HIDAPI_DriverPS5_ApplyCalibrationData(ctx, 2, LOAD16(packet->rgucGyroZ[0], packet->rgucGyroZ[1]));
+        data[0] = HIDAPI_DriverPS5_VR2Sense_ApplyCalibrationData(ctx, 0, LOAD16(packet->rgucGyroX[0], packet->rgucGyroX[1]));
+        data[1] = HIDAPI_DriverPS5_VR2Sense_ApplyCalibrationData(ctx, 1, LOAD16(packet->rgucGyroY[0], packet->rgucGyroY[1]));
+        data[2] = HIDAPI_DriverPS5_VR2Sense_ApplyCalibrationData(ctx, 2, LOAD16(packet->rgucGyroZ[0], packet->rgucGyroZ[1]));
         SDL_PrivateJoystickSensor(joystick, SDL_SENSOR_GYRO, timestamp_us, data, 3);
 
-        data[0] = HIDAPI_DriverPS5_ApplyCalibrationData(ctx, 3, LOAD16(packet->rgucAccelX[0], packet->rgucAccelX[1]));
-        data[1] = HIDAPI_DriverPS5_ApplyCalibrationData(ctx, 4, LOAD16(packet->rgucAccelY[0], packet->rgucAccelY[1]));
-        data[2] = HIDAPI_DriverPS5_ApplyCalibrationData(ctx, 5, LOAD16(packet->rgucAccelZ[0], packet->rgucAccelZ[1]));
+        data[0] = HIDAPI_DriverPS5_VR2Sense_ApplyCalibrationData(ctx, 3, LOAD16(packet->rgucAccelX[0], packet->rgucAccelX[1]));
+        data[1] = HIDAPI_DriverPS5_VR2Sense_ApplyCalibrationData(ctx, 4, LOAD16(packet->rgucAccelY[0], packet->rgucAccelY[1]));
+        data[2] = HIDAPI_DriverPS5_VR2Sense_ApplyCalibrationData(ctx, 5, LOAD16(packet->rgucAccelZ[0], packet->rgucAccelZ[1]));
         SDL_PrivateJoystickSensor(joystick, SDL_SENSOR_ACCEL, timestamp_us, data, 3);
     }
 }
 
-static void HIDAPI_DriverPS5_HandleStatePacket(SDL_Joystick *joystick, SDL_hid_device *dev, SDL_DriverPS5_Context *ctx, PS5StatePacket_t *packet)
+static void HIDAPI_DriverPS5_VR2Sense_HandleStatePacket(SDL_Joystick *joystick, SDL_hid_device *dev, SDL_DriverPS5_Context *ctx, PS5StatePacket_t *packet)
 {
     static const float TOUCHPAD_SCALEX = 1.0f / 1920;
     static const float TOUCHPAD_SCALEY = 1.0f / 1070;
@@ -1356,7 +1356,7 @@ static void HIDAPI_DriverPS5_HandleStatePacket(SDL_Joystick *joystick, SDL_hid_d
     SDL_memcpy(&ctx->last_state, packet, sizeof(ctx->last_state));
 }
 
-static void HIDAPI_DriverPS5_HandleStatePacketAlt(SDL_Joystick *joystick, SDL_hid_device *dev, SDL_DriverPS5_Context *ctx, PS5StatePacketAlt_t *packet)
+static void HIDAPI_DriverPS5_VR2Sense_HandleStatePacketAlt(SDL_Joystick *joystick, SDL_hid_device *dev, SDL_DriverPS5_Context *ctx, PS5StatePacketAlt_t *packet)
 {
     static const float TOUCHPAD_SCALEX = 1.0f / 1920;
     static const float TOUCHPAD_SCALEY = 1.0f / 1070;
@@ -1393,7 +1393,7 @@ static SDL_bool VerifyCRC(Uint8 *data, int size)
     return (unCRC == unPacketCRC) ? SDL_TRUE : SDL_FALSE;
 }
 
-static SDL_bool HIDAPI_DriverPS5_IsPacketValid(SDL_DriverPS5_Context *ctx, Uint8 *data, int size)
+static SDL_bool HIDAPI_DriverPS5_VR2Sense_IsPacketValid(SDL_DriverPS5_Context *ctx, Uint8 *data, int size)
 {
     switch (data[0]) {
     case k_EPS5ReportIdState:
@@ -1424,7 +1424,7 @@ static SDL_bool HIDAPI_DriverPS5_IsPacketValid(SDL_DriverPS5_Context *ctx, Uint8
     return SDL_FALSE;
 }
 
-static SDL_bool HIDAPI_DriverPS5_UpdateDevice(SDL_HIDAPI_Device *device)
+static SDL_bool HIDAPI_DriverPS5_VR2Sense_UpdateDevice(SDL_HIDAPI_Device *device)
 {
     SDL_DriverPS5_Context *ctx = (SDL_DriverPS5_Context *)device->context;
     SDL_Joystick *joystick = NULL;
@@ -1441,7 +1441,7 @@ static SDL_bool HIDAPI_DriverPS5_UpdateDevice(SDL_HIDAPI_Device *device)
 #ifdef DEBUG_PS5_PROTOCOL
         HIDAPI_DumpPacket("PS5 packet: size = %d", data, size);
 #endif
-        if (!HIDAPI_DriverPS5_IsPacketValid(ctx, data, size)) {
+        if (!HIDAPI_DriverPS5_VR2Sense_IsPacketValid(ctx, data, size)) {
             continue;
         }
 
@@ -1455,29 +1455,29 @@ static SDL_bool HIDAPI_DriverPS5_UpdateDevice(SDL_HIDAPI_Device *device)
         switch (data[0]) {
         case k_EPS5ReportIdState:
             if (size == 10 || size == 78) {
-                HIDAPI_DriverPS5_HandleSimpleStatePacket(joystick, device->dev, ctx, (PS5SimpleStatePacket_t *)&data[1]);
+                HIDAPI_DriverPS5_VR2Sense_HandleSimpleStatePacket(joystick, device->dev, ctx, (PS5SimpleStatePacket_t *)&data[1]);
             } else {
-                HIDAPI_DriverPS5_HandleStatePacketCommon(joystick, device->dev, ctx, (PS5StatePacketCommon_t *)&data[1]);
+                HIDAPI_DriverPS5_VR2Sense_HandleStatePacketCommon(joystick, device->dev, ctx, (PS5StatePacketCommon_t *)&data[1]);
                 if (ctx->use_alternate_report) {
-                    HIDAPI_DriverPS5_HandleStatePacketAlt(joystick, device->dev, ctx, (PS5StatePacketAlt_t *)&data[1]);
+                    HIDAPI_DriverPS5_VR2Sense_HandleStatePacketAlt(joystick, device->dev, ctx, (PS5StatePacketAlt_t *)&data[1]);
                 } else {
-                    HIDAPI_DriverPS5_HandleStatePacket(joystick, device->dev, ctx, (PS5StatePacket_t *)&data[1]);
+                    HIDAPI_DriverPS5_VR2Sense_HandleStatePacket(joystick, device->dev, ctx, (PS5StatePacket_t *)&data[1]);
                 }
             }
             break;
         case k_EPS5ReportIdBluetoothState:
             if (!ctx->enhanced_mode) {
                 /* This is the extended report, we can enable effects now */
-                HIDAPI_DriverPS5_SetEnhancedMode(device, joystick);
+                HIDAPI_DriverPS5_VR2Sense_SetEnhancedMode(device, joystick);
             }
-            HIDAPI_DriverPS5_HandleStatePacketCommon(joystick, device->dev, ctx, (PS5StatePacketCommon_t *)&data[2]);
+            HIDAPI_DriverPS5_VR2Sense_HandleStatePacketCommon(joystick, device->dev, ctx, (PS5StatePacketCommon_t *)&data[2]);
             if (ctx->use_alternate_report) {
-                HIDAPI_DriverPS5_HandleStatePacketAlt(joystick, device->dev, ctx, (PS5StatePacketAlt_t *)&data[2]);
+                HIDAPI_DriverPS5_VR2Sense_HandleStatePacketAlt(joystick, device->dev, ctx, (PS5StatePacketAlt_t *)&data[2]);
             } else {
-                HIDAPI_DriverPS5_HandleStatePacket(joystick, device->dev, ctx, (PS5StatePacket_t *)&data[2]);
+                HIDAPI_DriverPS5_VR2Sense_HandleStatePacket(joystick, device->dev, ctx, (PS5StatePacket_t *)&data[2]);
             }
             if (ctx->led_reset_state == k_EDS5LEDResetStatePending) {
-                HIDAPI_DriverPS5_CheckPendingLEDReset(device);
+                HIDAPI_DriverPS5_VR2Sense_CheckPendingLEDReset(device);
             }
             break;
         default:
@@ -1493,7 +1493,7 @@ static SDL_bool HIDAPI_DriverPS5_UpdateDevice(SDL_HIDAPI_Device *device)
             /* Check to see if it looks like the device disconnected */
             if (SDL_TICKS_PASSED(now, ctx->last_packet + BLUETOOTH_DISCONNECT_TIMEOUT_MS)) {
                 /* Send an empty output report to tickle the Bluetooth stack */
-                HIDAPI_DriverPS5_TickleBluetooth(device);
+                HIDAPI_DriverPS5_VR2Sense_TickleBluetooth(device);
             }
         } else {
             /* Reconnect the Bluetooth device once the USB device is gone */
@@ -1526,7 +1526,7 @@ static SDL_bool HIDAPI_DriverPS5_UpdateDevice(SDL_HIDAPI_Device *device)
     return size >= 0;
 }
 
-static void HIDAPI_DriverPS5_CloseJoystick(SDL_HIDAPI_Device *device, SDL_Joystick *joystick)
+static void HIDAPI_DriverPS5_VR2Sense_CloseJoystick(SDL_HIDAPI_Device *device, SDL_Joystick *joystick)
 {
     SDL_DriverPS5_Context *ctx = (SDL_DriverPS5_Context *)device->context;
 
@@ -1539,30 +1539,30 @@ static void HIDAPI_DriverPS5_CloseJoystick(SDL_HIDAPI_Device *device, SDL_Joysti
     ctx->joystick = NULL;
 }
 
-static void HIDAPI_DriverPS5_FreeDevice(SDL_HIDAPI_Device *device)
+static void HIDAPI_DriverPS5_VR2Sense_FreeDevice(SDL_HIDAPI_Device *device)
 {
 }
 
 SDL_HIDAPI_DeviceDriver SDL_HIDAPI_DriverPS5VR2Sense = {
     SDL_HINT_JOYSTICK_HIDAPI_PS5,
     SDL_TRUE,
-    HIDAPI_DriverPS5_RegisterHints,
-    HIDAPI_DriverPS5_UnregisterHints,
-    HIDAPI_DriverPS5_IsEnabled,
-    HIDAPI_DriverPS5_IsSupportedDevice,
-    HIDAPI_DriverPS5_InitDevice,
-    HIDAPI_DriverPS5_GetDevicePlayerIndex,
-    HIDAPI_DriverPS5_SetDevicePlayerIndex,
-    HIDAPI_DriverPS5_UpdateDevice,
-    HIDAPI_DriverPS5_OpenJoystick,
-    HIDAPI_DriverPS5_RumbleJoystick,
-    HIDAPI_DriverPS5_RumbleJoystickTriggers,
-    HIDAPI_DriverPS5_GetJoystickCapabilities,
-    HIDAPI_DriverPS5_SetJoystickLED,
-    HIDAPI_DriverPS5_SendJoystickEffect,
-    HIDAPI_DriverPS5_SetJoystickSensorsEnabled,
-    HIDAPI_DriverPS5_CloseJoystick,
-    HIDAPI_DriverPS5_FreeDevice,
+    HIDAPI_DriverPS5_VR2Sense_RegisterHints,
+    HIDAPI_DriverPS5_VR2Sense_UnregisterHints,
+    HIDAPI_DriverPS5_VR2Sense_IsEnabled,
+    HIDAPI_DriverPS5_VR2Sense_IsSupportedDevice,
+    HIDAPI_DriverPS5_VR2Sense_InitDevice,
+    HIDAPI_DriverPS5_VR2Sense_GetDevicePlayerIndex,
+    HIDAPI_DriverPS5_VR2Sense_SetDevicePlayerIndex,
+    HIDAPI_DriverPS5_VR2Sense_UpdateDevice,
+    HIDAPI_DriverPS5_VR2Sense_OpenJoystick,
+    HIDAPI_DriverPS5_VR2Sense_RumbleJoystick,
+    HIDAPI_DriverPS5_VR2Sense_RumbleJoystickTriggers,
+    HIDAPI_DriverPS5_VR2Sense_GetJoystickCapabilities,
+    HIDAPI_DriverPS5_VR2Sense_SetJoystickLED,
+    HIDAPI_DriverPS5_VR2Sense_SendJoystickEffect,
+    HIDAPI_DriverPS5_VR2Sense_SetJoystickSensorsEnabled,
+    HIDAPI_DriverPS5_VR2Sense_CloseJoystick,
+    HIDAPI_DriverPS5_VR2Sense_FreeDevice,
 };
 
 #endif /* SDL_JOYSTICK_HIDAPI_PS5_VR2_SENSE */

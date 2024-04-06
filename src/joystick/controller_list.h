@@ -149,8 +149,10 @@ static const ControllerDescription_t arrControllers[] = {
 	// Removing the Giotek because there were a bunch of help tickets from users w/ issues including from non-PS4 controller users. This VID/PID is probably used in different FW's
 //	{ MAKE_CONTROLLER_ID( 0x7545, 0x1122 ), k_eControllerType_PS4Controller, NULL },	// Giotek VX4 - trackpad/gyro don't work. Had to not filter on interface info. Light bar is flaky, but works.
 
-	{ MAKE_CONTROLLER_ID( 0x054c, 0x0ce6 ), k_eControllerType_PS5Controller, NULL },	// Sony DualSense Controller
-	{ MAKE_CONTROLLER_ID( 0x054c, 0x0df2 ), k_eControllerType_PS5Controller, NULL },	// Sony DualSense Edge Controller
+	{ MAKE_CONTROLLER_ID( 0x054c, 0x0ce6 ), k_eControllerType_PS5Controller, NULL },	// Sony PlayStation DualSense Controller
+	{ MAKE_CONTROLLER_ID( 0x054c, 0x0df2 ), k_eControllerType_PS5Controller, NULL },	// Sony PlayStation DualSense Edge Controller
+    { MAKE_CONTROLLER_ID( 0x054c, 0x0e45 ), k_eControllerType_PS5VR2SenseLeft,  NULL }, // Sony PlayStation VR2 Sense Controller (Left)
+	{ MAKE_CONTROLLER_ID( 0x054c, 0x0e46 ), k_eControllerType_PS5VR2SenseRight, NULL }, // Sony PlayStation VR2 Sense Controller (Right)
 	{ MAKE_CONTROLLER_ID( 0x054c, 0x0e5f ), k_eControllerType_PS5Controller, NULL },	// Access Controller for PS5
 	{ MAKE_CONTROLLER_ID( 0x0e6f, 0x0209 ), k_eControllerType_PS5Controller, NULL },	// Victrix Pro FS PS4/PS5 (PS5 mode)
 	{ MAKE_CONTROLLER_ID( 0x0f0d, 0x0163 ), k_eControllerType_PS5Controller, NULL },	// HORI Fighting Commander OCTA
@@ -160,8 +162,6 @@ static const ControllerDescription_t arrControllers[] = {
 	{ MAKE_CONTROLLER_ID( 0x3285, 0x0d18 ), k_eControllerType_PS5Controller, NULL },	// NACON Revolution 5 Pro (PS5 mode with dongle)
 	{ MAKE_CONTROLLER_ID( 0x3285, 0x0d19 ), k_eControllerType_PS5Controller, NULL },	// NACON Revolution 5 Pro (PS5 mode wired)
 	{ MAKE_CONTROLLER_ID( 0x358a, 0x0104 ), k_eControllerType_PS5Controller, NULL },	// Backbone One PlayStation Edition for iOS
-	{ MAKE_CONTROLLER_ID( 0x054c, 0x0e45 ), k_eControllerType_PS5Controller, NULL },    // Sony PlayStation VR2 Sense Controller (Left)
-	{ MAKE_CONTROLLER_ID( 0x054c, 0x0e46 ), k_eControllerType_PS5Controller, NULL },    // Sony PlayStation VR2 Sense Controller (Right)
 
 	{ MAKE_CONTROLLER_ID( 0x0079, 0x0006 ), k_eControllerType_UnknownNonSteamController, NULL },	// DragonRise Generic USB PCB, sometimes configured as a PC Twin Shock Controller - looks like a DS3 but the face buttons are 1-4 instead of symbols
 
