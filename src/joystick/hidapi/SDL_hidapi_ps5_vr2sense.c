@@ -1209,7 +1209,7 @@ static void HIDAPI_DriverPS5_VR2Sense_HandleStatePacketCommon(SDL_Joystick *joys
         SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_GUIDE, ((((uint8_t*) packet)[9-1]) & 0x10) ? SDL_PRESSED : SDL_RELEASED);
         //SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_MISC1, (data & 0x02) ? SDL_PRESSED : SDL_RELEASED);
 
-        if (1) {
+        if (joystick->name[65] == 'L') {
             axis = ((uint8_t *) packet)[3-1];
             axis = ((int)axis * 257) - 32768;
             SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_TRIGGERLEFT, axis);
@@ -1220,7 +1220,7 @@ static void HIDAPI_DriverPS5_VR2Sense_HandleStatePacketCommon(SDL_Joystick *joys
         }
 
 
-        if (1) {
+        if (joystick->name[65] == 'L') {
             axis = ((uint8_t *) packet)[1-1];
             axis = ((int)axis * 257) - 32768;
             SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_LEFTX, axis);
