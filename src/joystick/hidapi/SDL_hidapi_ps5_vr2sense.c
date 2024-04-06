@@ -1171,8 +1171,8 @@ static void HIDAPI_DriverPS5_VR2Sense_HandleStatePacketCommon(SDL_Joystick *joys
       -----
       right
 
-      data[8] 0x02 cross bu
-      data[8] 0x04 circle b
+      data[8] 0x02 cross button
+      data[8] 0x04 circle button
       data[9] 0x02 options click
       data[9] 0x10 ps
       data[8] 0x20 r1
@@ -1209,16 +1209,24 @@ static void HIDAPI_DriverPS5_VR2Sense_HandleStatePacketCommon(SDL_Joystick *joys
         SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_GUIDE, ((((uint8_t*) packet)[9]) & 0x10) ? SDL_PRESSED : SDL_RELEASED);
         //SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_MISC1, (data & 0x02) ? SDL_PRESSED : SDL_RELEASED);
 
-        //SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_TRIGGERLEFT, axis);
-        //SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_TRIGGERRIGHT, axis);
-        //axis = ((int)packet->ucLeftJoystickX * 257) - 32768;
-        //SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_LEFTX, axis);
-        //axis = ((int)packet->ucLeftJoystickY * 257) - 32768;
-        //SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_LEFTY, axis);
-        //axis = ((int)packet->ucRightJoystickX * 257) - 32768;
-        //SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_RIGHTX, axis);
-        //axis = ((int)packet->ucRightJoystickY * 257) - 32768;
-        //SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_RIGHTY, axis);
+        axis = ((uint8_t *) packet)[3];
+        axis = ((int)axis * 257) - 32768;
+        SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_TRIGGERLEFT, axis);
+        axis = ((uint8_t *) packet)[3];
+        axis = ((int)axis * 257) - 32768;
+        SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_TRIGGERRIGHT, axis);
+        axis = ((uint8_t *) packet)[1];
+        axis = ((int)axis * 257) - 32768;
+        SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_LEFTX, axis);
+        axis = ((uint8_t *) packet)[2];
+        axis = ((int)axis * 257) - 32768;
+        SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_LEFTY, axis);
+        axis = ((uint8_t *) packet)[1];
+        axis = ((int)axis * 257) - 32768;
+        SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_RIGHTX, axis); 
+        axis = ((uint8_t *) packet)[2];
+        axis = ((int)axis * 257) - 32768;
+        SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_RIGHTY, axis);
     }
 
 
