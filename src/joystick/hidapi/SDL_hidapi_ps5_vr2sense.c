@@ -1166,6 +1166,30 @@ static void HIDAPI_DriverPS5_VR2Sense_HandleStatePacketCommon(SDL_Joystick *joys
       data[9] 4    - l3 click
       data[1] 0xff - x analog
       data[2] 0xff - y analog
+
+
+      -----
+      right
+
+      8 2 x bu
+      8 4 circle b
+      9 2 options click
+      9 10 ps
+      8 20 r1
+
+      3 l2
+      4 l2 cap
+
+      5 r1 cap analog
+
+      1 x ax ff right
+      2 y ax ff down
+
+      9 0x08 r3
+      10 0x4 r3 cap on off
+
+      10 0x2 x cap
+      10 1   circle cap
     */
 
     if (1) {
