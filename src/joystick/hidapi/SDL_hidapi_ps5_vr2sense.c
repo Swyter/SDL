@@ -1153,9 +1153,9 @@ static void HIDAPI_DriverPS5_VR2Sense_HandleStatePacketCommon(SDL_Joystick *joys
 
     /*
       LEFT
-      data[9] 1 - create click
-      data[8] 8 - triangle click
-      data[8] 1 - square click
+      data[9] 0x01 - create click
+      data[8] 0x08 - triangle click
+      data[8] 0x01 - square click
       data[3] 0xff - l2 (analog)
       data[4] 0xff - l2 capacitative finger proximity pre-touch (analog)
       data[4] 0xff - l1 capacitative finger proximity pre-touch (analog)
@@ -1163,7 +1163,7 @@ static void HIDAPI_DriverPS5_VR2Sense_HandleStatePacketCommon(SDL_Joystick *joys
       data[8] 0x10 - l1 (on/off)
       data[9] 0x10 - PS button (on/off)
 
-      data[9] 4    - l3 click
+      data[9] 0x04 - l3 click
       data[1] 0xff - x analog
       data[2] 0xff - y analog
 
@@ -1171,14 +1171,14 @@ static void HIDAPI_DriverPS5_VR2Sense_HandleStatePacketCommon(SDL_Joystick *joys
       -----
       right
 
-      data[8] 2 x bu
-      data[8] 4 circle b
-      data[9] 2 options click
-      data[9] 10 ps
-      data[8] 20 r1
+      data[8] 0x02 cross bu
+      data[8] 0x04 circle b
+      data[9] 0x02 options click
+      data[9] 0x10 ps
+      data[8] 0x20 r1
 
-      data[3] 0xff - l2     (analog)
-      data[4] 0xff - l2 cap (analog)
+      data[3] 0xff - r2     (analog)
+      data[4] 0xff - r2 cap (analog)
 
       data[5] 0xff - r1 cap (analog)
 
@@ -1188,37 +1188,37 @@ static void HIDAPI_DriverPS5_VR2Sense_HandleStatePacketCommon(SDL_Joystick *joys
       data[9] 0x08 - r3
       data[10] 0x4 - r3 capacitative finger proximity (on/off)
 
-      data[10] 0x2 - x capacitative finger proximity (on/off)
-      data[10] 1   - circle capacitative finger proximity (on/off)
+      data[10] 0x02 - x capacitative finger proximity (on/off)
+      data[10] 0x01 - circle capacitative finger proximity (on/off)
     */
 
     if (1) {
-        Uint8 data = (packet->rgucButtonsAndHat[0] >> 4);
-        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_X, (data & 0x01) ? SDL_PRESSED : SDL_RELEASED);
-        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_A, (data & 0x02) ? SDL_PRESSED : SDL_RELEASED);
-        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_B, (data & 0x04) ? SDL_PRESSED : SDL_RELEASED);
-        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_Y, (data & 0x08) ? SDL_PRESSED : SDL_RELEASED);
+        Uint8 data = (((uint8_t*) packet)[0] >> 4);
+        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_X /* swy: square */, ((((uint8_t*) packet)[8]) & 0x01) ? SDL_PRESSED : SDL_RELEASED);
+        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_A /* swy: cross */, ((((uint8_t*) packet)[8]) & 0x02) ? SDL_PRESSED : SDL_RELEASED);
+        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_B /* swy: circle */, ((((uint8_t*) packet)[8]) & 0x04) ? SDL_PRESSED : SDL_RELEASED);
+        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_Y /* swy: triangle */, ((((uint8_t*) packet)[8]) & 0x08) ? SDL_PRESSED : SDL_RELEASED);
 
-        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_LEFTSHOULDER, (data & 0x01) ? SDL_PRESSED : SDL_RELEASED);
-        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER, (data & 0x02) ? SDL_PRESSED : SDL_RELEASED);
-        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_BACK, (data & 0x10) ? SDL_PRESSED : SDL_RELEASED);
-        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_START, (data & 0x20) ? SDL_PRESSED : SDL_RELEASED);
-        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_LEFTSTICK, (data & 0x40) ? SDL_PRESSED : SDL_RELEASED);
-        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_RIGHTSTICK, (data & 0x80) ? SDL_PRESSED : SDL_RELEASED);
+        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_LEFTSHOULDER, ((((uint8_t*) packet)[8]) & 0x10) ? SDL_PRESSED : SDL_RELEASED);
+        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER, ((((uint8_t*) packet)[8]) & 0x20) ? SDL_PRESSED : SDL_RELEASED);
+        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_BACK, ((((uint8_t*) packet)[9]) & 0x01) ? SDL_PRESSED : SDL_RELEASED);
+        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_START, ((((uint8_t*) packet)[9]) & 0x02) ? SDL_PRESSED : SDL_RELEASED);
+        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_LEFTSTICK, ((((uint8_t*) packet)[9]) & 0x04) ? SDL_PRESSED : SDL_RELEASED);
+        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_RIGHTSTICK, ((((uint8_t*) packet)[9]) & 0x08) ? SDL_PRESSED : SDL_RELEASED);
 
-        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_GUIDE, (data & 0x01) ? SDL_PRESSED : SDL_RELEASED);
-        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_MISC1, (data & 0x02) ? SDL_PRESSED : SDL_RELEASED);
+        SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_GUIDE, ((((uint8_t*) packet)[9]) & 0x10) ? SDL_PRESSED : SDL_RELEASED);
+        //SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_MISC1, (data & 0x02) ? SDL_PRESSED : SDL_RELEASED);
 
-        SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_TRIGGERLEFT, axis);
-        SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_TRIGGERRIGHT, axis);
-        axis = ((int)packet->ucLeftJoystickX * 257) - 32768;
-        SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_LEFTX, axis);
-        axis = ((int)packet->ucLeftJoystickY * 257) - 32768;
-        SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_LEFTY, axis);
-        axis = ((int)packet->ucRightJoystickX * 257) - 32768;
-        SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_RIGHTX, axis);
-        axis = ((int)packet->ucRightJoystickY * 257) - 32768;
-        SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_RIGHTY, axis);
+        //SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_TRIGGERLEFT, axis);
+        //SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_TRIGGERRIGHT, axis);
+        //axis = ((int)packet->ucLeftJoystickX * 257) - 32768;
+        //SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_LEFTX, axis);
+        //axis = ((int)packet->ucLeftJoystickY * 257) - 32768;
+        //SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_LEFTY, axis);
+        //axis = ((int)packet->ucRightJoystickX * 257) - 32768;
+        //SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_RIGHTX, axis);
+        //axis = ((int)packet->ucRightJoystickY * 257) - 32768;
+        //SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_RIGHTY, axis);
     }
 
 
