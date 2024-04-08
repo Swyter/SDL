@@ -1192,6 +1192,14 @@ static void HIDAPI_DriverPS5_VR2Sense_HandleStatePacketCommon(SDL_Joystick *joys
       data[10] 0x01 - circle capacitative finger proximity (on/off)
     */
 
+#if 1
+    axis = *(Sint16 *)&(((unsigned char *)packet)[17 - 2]);
+    //axis = ((int)axis * 257) - 32768;
+    SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_TRIGGERLEFT, axis);
+
+        return;
+#endif
+
     if (1) {
         Uint8 data = (((uint8_t*) packet)[0] >> 4);
         SDL_PrivateJoystickButton(joystick, SDL_CONTROLLER_BUTTON_X /* swy: square */, ((((uint8_t*) packet)[8-1]) & 0x01) ? SDL_PRESSED : SDL_RELEASED);
