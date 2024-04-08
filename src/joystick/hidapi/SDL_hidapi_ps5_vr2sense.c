@@ -1192,10 +1192,44 @@ static void HIDAPI_DriverPS5_VR2Sense_HandleStatePacketCommon(SDL_Joystick *joys
       data[10] 0x01 - circle capacitative finger proximity (on/off)
     */
 
-#if 1
+#if 0 // accel
     axis = *(Sint16 *)&(((unsigned char *)packet)[17 - 2]);
-    //axis = ((int)axis * 257) - 32768;
-    SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_TRIGGERLEFT, axis);
+    SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_LEFTY, axis);
+
+    axis = *(Sint16 *)&(((unsigned char *)packet)[19 - 2]);
+    SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_LEFTX, axis);
+
+    axis = *(Sint16 *)&(((unsigned char *)packet)[21 - 2]);
+    SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_RIGHTY, axis);
+    SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_RIGHTX, 70);
+        return;
+#endif
+
+
+#if 0 // gyro
+        axis = *(Sint16 *)&(((unsigned char *)packet)[23 - 2]);
+        SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_LEFTY, axis);
+
+        axis = *(Sint16 *)&(((unsigned char *)packet)[25 - 2]);
+        SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_LEFTX, axis);
+
+        axis = *(Sint16 *)&(((unsigned char *)packet)[27 - 2]);
+        SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_RIGHTY, axis);
+        SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_RIGHTX, 70);
+
+        return;
+#endif
+
+#if 1
+        axis = *(Sint16 *)&(((unsigned char *)packet)[29 - 2]);
+        SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_LEFTY, axis);
+
+        axis = *(Sint16 *)&(((unsigned char *)packet)[31 - 2]);
+        SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_LEFTX, axis);
+
+        axis = *(Sint16 *)&(((unsigned char *)packet)[33 - 2]);
+        SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_RIGHTY, axis);
+        SDL_PrivateJoystickAxis(joystick, SDL_CONTROLLER_AXIS_RIGHTX, 70);
 
         return;
 #endif
